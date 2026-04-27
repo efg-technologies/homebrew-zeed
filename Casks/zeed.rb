@@ -1,6 +1,6 @@
 cask "zeed" do
   version "147.0.7727.55.49"
-  sha256 "74a5696e1bc92fce1ec1740b4a1fa1b2ff1e0243a299d858c2c00c2ff3e33992"
+  sha256 "1a3b9f9363bed6e8f52e8aa796b27ed8d0f26bde6e99fbf26f04479707c46d47"
 
   url "https://github.com/efg-technologies/zeed-browser-dist/releases/download/v#{version}/zeed-#{version}-mac-arm64.dmg",
       verified: "github.com/efg-technologies/zeed-browser-dist/"
