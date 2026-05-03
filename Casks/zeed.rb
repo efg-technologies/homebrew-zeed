@@ -27,11 +27,15 @@ cask "zeed" do
   # IconServices の icon キャッシュを refresh する。これをやらないと
   # macOS が古い (Chromium) icon を表示し続けることがある。
   postflight do
+    app_path = "#{appdir}/Zeed Browser.app"
+    lsregister = "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks" \
+                 "/LaunchServices.framework/Versions/A/Support/lsregister"
+
     system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/Zeed Browser.app"],
+                   args: ["-dr", "com.apple.quarantine", app_path],
                    sudo: false
-    system_command "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister",
-                   args: ["-f", "#{appdir}/Zeed Browser.app"],
+    system_command lsregister,
+                   args: ["-f", app_path],
                    sudo: false
     system_command "/usr/bin/killall",
                    args:         ["-q", "Dock", "Finder", "iconservicesagent", "iconservicesd"],
