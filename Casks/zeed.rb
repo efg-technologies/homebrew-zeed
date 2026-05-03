@@ -30,6 +30,12 @@ cask "zeed" do
     app_path = "#{appdir}/Zeed Browser.app"
     lsregister = "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks" \
                  "/LaunchServices.framework/Versions/A/Support/lsregister"
+    # `getconf DARWIN_USER_CACHE_DIR` returns e.g.
+    # /var/folders/xx/yyy.../C/  — the user's per-session caches dir.
+    # com.apple.iconservicesagent ここに icon hash → bitmap の cache を置く。
+    # Cask の install で bundle が差し替わっても、この cache が古い hash の
+    # bitmap (前 install 時の Chromium icon) を保持し続けるため、それを消す。
+    user_cache = `/usr/bin/getconf DARWIN_USER_CACHE_DIR`.chomp
 
     system_command "/usr/bin/xattr",
                    args: ["-dr", "com.apple.quarantine", app_path],
@@ -37,6 +43,13 @@ cask "zeed" do
     system_command lsregister,
                    args: ["-f", app_path],
                    sudo: false
+    # getconf が空 / "/" を返した時は cwd 配下を誤削除しないよう skip
+    if user_cache.start_with?("/") && user_cache.length > 1
+      system_command "/bin/rm",
+                     args:         ["-rf", "#{user_cache}com.apple.iconservicesagent"],
+                     sudo:         false,
+                     must_succeed: false
+    end
     system_command "/usr/bin/killall",
                    args:         ["-q", "Dock", "Finder", "iconservicesagent", "iconservicesd"],
                    sudo:         false,
