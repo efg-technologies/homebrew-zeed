@@ -21,11 +21,26 @@ cask "zeed" do
   # Unsigned beta — Apple Developer signing は D-U-N-S 取得後に対応予定。
   # ここでは Gatekeeper の quarantine xattr を install 後に外して、起動時の
   # 「開発元が未確認」警告を出さないようにする。
-  # 署名+notarize 済みリリースに切り替わったら下記 postflight は削除する。
+  # 署名+notarize 済みリリースに切り替わったら下記 quarantine 削除は外す。
+  #
+  # version bump 時は LaunchServices に新 bundle を再登録し、Dock /
+  # IconServices の icon キャッシュを refresh する。これをやらないと
+  # macOS が古い (Chromium) icon を表示し続けることがある。
   postflight do
+    app_path = "#{appdir}/Zeed Browser.app"
+    lsregister = "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks" \
+                 "/LaunchServices.framework/Versions/A/Support/lsregister"
+
     system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/Zeed Browser.app"],
+                   args: ["-dr", "com.apple.quarantine", app_path],
                    sudo: false
+    system_command lsregister,
+                   args: ["-f", app_path],
+                   sudo: false
+    system_command "/usr/bin/killall",
+                   args:         ["-q", "Dock", "Finder", "iconservicesagent", "iconservicesd"],
+                   sudo:         false,
+                   must_succeed: false
   end
 
   zap trash: [
