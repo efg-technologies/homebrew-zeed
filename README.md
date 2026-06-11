@@ -18,8 +18,8 @@ brew install --cask efg-technologies/zeed/zeed
 ## What you get
 
 - **Apple Silicon (arm64)** binary, Chromium 147.0.7727.55 base.
-- Auto-removes Gatekeeper `com.apple.quarantine` xattr (this is an **unsigned beta**;
-  Apple Developer signing is in progress).
+- **Developer ID signed + Apple notarized** dmg — no Gatekeeper warnings,
+  no quarantine workarounds.
 - First-run setup: paste an [OpenRouter](https://openrouter.ai) API key and you're done.
 
 ## Update
@@ -38,7 +38,8 @@ brew uninstall --zap --cask zeed
 
 - [x] **Apple Silicon** (arm64) — current
 - [ ] **Universal binary** (Intel + Apple Silicon) — after D-U-N-S
-- [ ] **Apple notarized** — switches to upstream `homebrew-cask` (no tap needed)
+- [x] **Apple notarized** — since v147.0.7727.55.53 (Developer ID signed + stapled)
+- [ ] **Upstream `homebrew-cask` submission** (no tap needed)
 - [ ] **Sparkle in-app auto-update** — Phase 3
 
 ## Issues / source
