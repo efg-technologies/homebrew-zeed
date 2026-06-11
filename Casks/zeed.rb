@@ -18,10 +18,10 @@ cask "zeed" do
 
   app "Zeed Browser.app"
 
-  # Unsigned beta — Apple Developer signing は D-U-N-S 取得後に対応予定。
-  # ここでは Gatekeeper の quarantine xattr を install 後に外して、起動時の
-  # 「開発元が未確認」警告を出さないようにする。
-  # 署名+notarize 済みリリースに切り替わったら下記 quarantine 削除は外す。
+  # dmg は v147.0.7727.55.53 以降 Developer ID 署名 + Apple notarization +
+  # staple 済み。Gatekeeper はそのまま通るため、quarantine xattr の削除は
+  # 不要 (unsigned beta 時代の workaround は除去済み — postflight に
+  # quarantine 操作を再追加しないこと)。
   #
   # version bump 時は LaunchServices に新 bundle を再登録し、Dock /
   # IconServices の icon キャッシュを refresh する。これをやらないと
@@ -37,9 +37,6 @@ cask "zeed" do
     # bitmap (前 install 時の Chromium icon) を保持し続けるため、それを消す。
     user_cache = `/usr/bin/getconf DARWIN_USER_CACHE_DIR`.chomp
 
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", app_path],
-                   sudo: false
     system_command lsregister,
                    args: ["-f", app_path],
                    sudo: false
