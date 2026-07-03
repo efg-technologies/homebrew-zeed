@@ -13,6 +13,11 @@ cask "zeed" do
     strategy :github_latest
   end
 
+  # In-app 更新は Sparkle 2 (https://zeedbrowser.com/appcast.xml) に一本化。
+  # auto_updates true により `brew upgrade` (--greedy なし) はこの cask を
+  # skip する — Chrome / Brave の cask と同じ標準構成。
+  # 配信基盤: zeed-browser packaging/scripts/make-appcast.mjs (lab Issue #18)
+  auto_updates true
   depends_on macos: :monterey
   depends_on arch: :arm64
 
