@@ -1,6 +1,6 @@
 cask "zeed" do
-  version "149.0.7827.102.60"
-  sha256 "2a146feb8bcf1f9b0084bb0d862ffbf13d1771ae97ec199e2a81b6df456f020d"
+  version "150.0.7871.46.66"
+  sha256 "55c54ba016dff4c815395a407af4c9c1a7631275c1bbd4e6e3c60306a1295896"
 
   url "https://github.com/efg-technologies/zeed-browser-dist/releases/download/v#{version}/zeed-#{version}-mac-arm64.dmg",
       verified: "github.com/efg-technologies/zeed-browser-dist/"
@@ -18,10 +18,12 @@ cask "zeed" do
 
   app "Zeed Browser.app"
 
-  # dmg は v147.0.7727.55.53 以降 Developer ID 署名 + Apple notarization +
-  # staple 済み。Gatekeeper はそのまま通るため、quarantine xattr の削除は
-  # 不要 (unsigned beta 時代の workaround は除去済み — postflight に
-  # quarantine 操作を再追加しないこと)。
+  # ⚠️ v150.0.7871.46.66 は暫定的に UNSIGNED (ad-hoc 署名のみ) — Apple の
+  # Developer ID 証明書上限で新規発行が blocked のため、署名復旧までの stopgap。
+  # 復旧後は notarized dmg に戻し、下の caveats を除去すること。Gatekeeper は
+  # 初回起動でブロックするので caveats で回避を案内。**Homebrew 既定の
+  # quarantine は残す — セキュリティ境界を越える自動 xattr 削除を postflight に
+  # 足さないこと** (ユーザー自身が選んで外す想定、caveats 参照)。
   #
   # version bump 時は LaunchServices に新 bundle を再登録し、Dock /
   # IconServices の icon キャッシュを refresh する。これをやらないと
@@ -59,4 +61,16 @@ cask "zeed" do
     "~/Library/Preferences/org.efg-technologies.com.plist",
     "~/Library/Saved Application State/org.efg-technologies.com.savedState",
   ]
+
+  caveats <<~EOS
+    This build (#{version}) is distributed WITHOUT Apple notarization for now
+    (ad-hoc signed only) while Developer ID signing is being restored. macOS
+    Gatekeeper will block it on first launch. To allow it, either:
+
+      * System Settings -> Privacy & Security -> "Open Anyway", or
+      * clear the quarantine flag yourself:
+          xattr -dr com.apple.quarantine "/Applications/Zeed Browser.app"
+
+    This affects the first launch only. A notarized build will follow.
+  EOS
 end
